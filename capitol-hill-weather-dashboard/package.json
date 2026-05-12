@@ -1,0 +1,11 @@
+{
+  "name": "capitol-hill-weather-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "python3 -m http.server 5173",
+    "email:dry-run": "python3 scripts/daily_email.py --dry-run",
+    "test": "node --test tests/*.test.js"
+  }
+}
