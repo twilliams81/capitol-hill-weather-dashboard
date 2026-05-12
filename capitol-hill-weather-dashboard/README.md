@@ -26,9 +26,9 @@ python3 scripts/daily_email.py --dry-run
 
 The workflow publishes the contents of `capitol-hill-weather-dashboard`.
 
-## Daily 9am Email
+## Daily Email
 
-The `Daily weather email` workflow runs at both UTC offsets that can correspond to 9am Eastern time. The script sends only when local Capitol Hill time is actually 9am, so daylight saving time is handled without editing the cron schedule.
+The `Daily weather email` workflow runs hourly. The script sends only when local Capitol Hill time matches `DAILY_EMAIL_HOUR`, so daylight saving time is handled without editing the cron schedule.
 
 Add these repository secrets in **Settings -> Secrets and variables -> Actions**:
 
@@ -46,3 +46,4 @@ For Gmail, use an app password rather than your normal Google password.
 Optional repository variable:
 
 - `DASHBOARD_URL`: the GitHub Pages URL, included as a link in the email.
+- `DAILY_EMAIL_HOUR`: hour in 24-hour Capitol Hill time, default `9`.

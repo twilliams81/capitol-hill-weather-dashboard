@@ -2,9 +2,8 @@ name: Daily weather email
 
 on:
   schedule:
-    # Run at both possible 9am Eastern UTC offsets. The script sends only
-    # when local Capitol Hill time is actually 9am.
-    - cron: "0 13,14 * * *"
+    # Run hourly; the script sends only at DAILY_EMAIL_HOUR in Capitol Hill time.
+    - cron: "0 * * * *"
   workflow_dispatch:
     inputs:
       force_send:
@@ -27,9 +26,10 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Send 9am Capitol Hill weather email
+      - name: Send Capitol Hill weather email
         env:
           FORCE_SEND: ${{ github.event.inputs.force_send }}
+          DAILY_EMAIL_HOUR: ${{ vars.DAILY_EMAIL_HOUR }}
           SMTP_HOST: ${{ secrets.SMTP_HOST }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
           SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}

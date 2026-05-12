@@ -322,8 +322,9 @@ def should_send(force_send):
     if force_send:
         return True
 
+    target_hour = int(os.environ.get("DAILY_EMAIL_HOUR", "9"))
     now = datetime.now(ZoneInfo(LOCATION["timezone"]))
-    return now.hour == 9
+    return now.hour == target_hour
 
 
 def send_email(subject, text, html_body):
@@ -366,7 +367,8 @@ def main():
 
     force_send = os.environ.get("FORCE_SEND", "").lower() == "true"
     if not args.dry_run and not should_send(force_send):
-        print("Not 9am America/New_York; skipping.")
+        target_hour = int(os.environ.get("DAILY_EMAIL_HOUR", "9"))
+        print(f"Not {target_hour}:00 America/New_York; skipping.")
         return
 
     current, hours = fetch_forecast()
