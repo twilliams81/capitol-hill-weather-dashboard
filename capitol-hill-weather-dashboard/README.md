@@ -1,6 +1,6 @@
-# Capitol Hill Infant Weather Dashboard
+# DC Outdoor Weather Guide
 
-Static dashboard for deciding whether to take an infant outside on Capitol Hill, DC.
+Static dashboard for conservative outdoor weather guidance in Washington, DC.
 
 ## Run Locally
 
@@ -28,7 +28,7 @@ The workflow publishes the contents of `capitol-hill-weather-dashboard`.
 
 ## Daily Email
 
-The `Daily weather email` workflow runs hourly. The script sends only when local Capitol Hill time matches `DAILY_EMAIL_HOUR`, so daylight saving time is handled without editing the cron schedule.
+The `Daily outdoor weather email` workflow runs hourly. The script sends only when local Washington, DC time matches `DAILY_EMAIL_HOUR`, so daylight saving time is handled without editing the cron schedule.
 
 Add these repository secrets in **Settings -> Secrets and variables -> Actions**:
 
@@ -41,9 +41,9 @@ Add these repository secrets in **Settings -> Secrets and variables -> Actions**
 
 `MAIL_TO` can contain both recipients, separated by commas.
 
-For Gmail, use an app password rather than your normal Google password.
+Use an app-specific password or SMTP token if your email provider requires one.
 
 Optional repository variable:
 
 - `DASHBOARD_URL`: the GitHub Pages URL, included as a link in the email.
-- `DAILY_EMAIL_HOUR`: hour in 24-hour Capitol Hill time, default `9`.
+- `DAILY_EMAIL_HOUR`: hour in 24-hour Washington, DC time, default `9`.

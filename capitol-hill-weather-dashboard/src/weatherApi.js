@@ -1,5 +1,5 @@
 const CAPITOL_HILL = {
-  name: "Capitol Hill, DC",
+  name: "Washington, DC",
   latitude: 38.8899,
   longitude: -76.9925,
   timezone: "America/New_York"

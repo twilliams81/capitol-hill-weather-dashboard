@@ -40,7 +40,7 @@ test("parseForecast maps current and hourly weather fields", () => {
     }
   });
 
-  assert.equal(forecast.location.name, "Capitol Hill, DC");
+  assert.equal(forecast.location.name, "Washington, DC");
   assert.equal(forecast.current.temperature, 72);
   assert.equal(forecast.current.uvIndex, 3);
   assert.equal(forecast.hours.length, 2);

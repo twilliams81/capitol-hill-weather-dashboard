@@ -40,7 +40,7 @@ async function loadDashboard() {
 function renderLoading() {
   app.innerHTML = `
     <section class="loading-panel">
-      <p class="eyebrow">Capitol Hill, DC</p>
+      <p class="eyebrow">Washington, DC</p>
       <h1>Checking today's outdoor windows...</h1>
       <p>Fetching live hourly weather from Open-Meteo.</p>
     </section>
@@ -73,7 +73,7 @@ function renderDashboard(forecast) {
     <header class="topbar">
       <div>
         <p class="eyebrow">${forecast.location.name}</p>
-        <h1>Infant outdoor weather</h1>
+        <h1>Outdoor weather guide</h1>
       </div>
       <button class="button" id="refresh" aria-label="Refresh weather">Refresh</button>
     </header>
@@ -143,9 +143,9 @@ function renderDashboard(forecast) {
     <section class="settings-panel">
       <div>
         <p class="eyebrow">Settings</p>
-        <p>Location fixed to Capitol Hill, DC. Infant mode locked on for a child under 6 months.</p>
+        <p>Location fixed to Washington, DC. Conservative mode is on for sensitive outdoor conditions.</p>
       </div>
-      <p class="disclaimer">Practical planning aid only. Use your judgment and follow medical guidance for your child.</p>
+      <p class="disclaimer">Practical planning aid only. Use your judgment and follow relevant health guidance.</p>
     </section>
   `;
 

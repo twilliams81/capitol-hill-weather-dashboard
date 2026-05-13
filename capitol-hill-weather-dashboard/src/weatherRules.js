@@ -5,7 +5,7 @@ export const STATUS = {
     shortLabel: "best",
     tone: "Good window",
     recommendation:
-      "A reasonable window for a short outing. Use shade, dress in light layers, and check his neck, chest, hands, and mood often."
+      "A reasonable window for a short outing. Use shade, dress in light layers, and keep an eye on comfort."
   },
   yellow: {
     key: "yellow",
@@ -21,7 +21,7 @@ export const STATUS = {
     shortLabel: "avoid",
     tone: "Indoor activity",
     recommendation:
-      "Use indoor play unless travel is necessary. The weather is outside the cautious infant range."
+      "Use indoor activity unless travel is necessary. The weather is outside the cautious range."
   }
 };
 
@@ -132,7 +132,7 @@ export function classifyWeather(hour) {
   }
 
   if (reasons.length === 0) {
-    reasons.push("temperature, humidity, wind, and precipitation are in the cautious infant range");
+    reasons.push("temperature, humidity, wind, and precipitation are in the cautious outdoor range");
   }
 
   return {

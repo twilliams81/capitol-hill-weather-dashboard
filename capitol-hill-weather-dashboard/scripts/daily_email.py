@@ -14,7 +14,7 @@ from urllib.request import urlopen
 from zoneinfo import ZoneInfo
 
 LOCATION = {
-    "name": "Capitol Hill, DC",
+    "name": "Washington, DC",
     "latitude": 38.8899,
     "longitude": -76.9925,
     "timezone": "America/New_York",
@@ -26,7 +26,7 @@ STATUS = {
         "tone": "Good window",
         "recommendation": (
             "A reasonable window for a short outing. Use shade, dress in light "
-            "layers, and check his neck, chest, hands, and mood often."
+            "layers, and keep an eye on comfort."
         ),
     },
     "yellow": {
@@ -43,7 +43,7 @@ STATUS = {
         "tone": "Indoor activity",
         "recommendation": (
             "Use indoor play unless travel is necessary. The weather is outside "
-            "the cautious infant range."
+            "the cautious range."
         ),
     },
 }
@@ -181,7 +181,7 @@ def classify(hour):
 
     if not reasons:
         reasons.append(
-            "temperature, humidity, wind, and precipitation are in the cautious infant range"
+            "temperature, humidity, wind, and precipitation are in the cautious outdoor range"
         )
 
     return {
@@ -272,8 +272,8 @@ def build_message(current, hours, dashboard_url):
         for hour in hours[:10]
     ]
 
-    subject = f"Capitol Hill baby weather: {c['label']} ({c['feels_like']}F feels-like)"
-    text = f"""Capitol Hill infant weather
+    subject = f"DC outdoor weather: {c['label']} ({c['feels_like']}F feels-like)"
+    text = f"""DC outdoor weather guide
 {local_time}
 
 Right now: {c['label']} - {c['tone']}
@@ -299,7 +299,7 @@ Hourly:
         text += f"\nDashboard: {dashboard_url}\n"
 
     html_body = f"""
-    <h1>Capitol Hill infant weather</h1>
+    <h1>DC outdoor weather guide</h1>
     <p>{html.escape(local_time)}</p>
     <h2>{html.escape(c['label'])}: {html.escape(c['tone'])}</h2>
     <p><strong>{c['feels_like']}F feels-like</strong> ({html.escape(c['feels_like_method'])})</p>
