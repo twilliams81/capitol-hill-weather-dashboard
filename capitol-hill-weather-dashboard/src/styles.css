@@ -134,26 +134,26 @@ h2 {
   background: #2d332f;
 }
 
-.light {
+.signal .light {
   width: 32px;
   height: 32px;
   border-radius: 50%;
   opacity: 0.25;
 }
 
-.light.red {
+.signal .light.red {
   background: #ff4d4d;
 }
 
-.light.yellow {
+.signal .light.yellow {
   background: #ffd23f;
 }
 
-.light.green {
+.signal .light.green {
   background: #3bd671;
 }
 
-.light.active {
+.signal .light.active {
   opacity: 1;
   box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.12);
 }
@@ -274,12 +274,18 @@ dd small {
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
+  min-width: 0;
 }
 
 .uv-header strong,
 .index-header strong {
   display: block;
   font-size: 1.25rem;
+  line-height: 1.2;
+}
+
+.index-header div {
+  min-width: 0;
 }
 
 .uv-header span,
@@ -289,10 +295,22 @@ dd small {
   font-weight: 700;
 }
 
+.index-header span {
+  flex: 0 0 auto;
+  max-width: 45%;
+  text-align: right;
+}
+
 .index-detail {
   margin-top: 10px;
   font-size: 0.92rem;
   line-height: 1.35;
+}
+
+.rain-panel > strong {
+  display: block;
+  font-size: 1.2rem;
+  line-height: 1.25;
 }
 
 .mosquito-panel.low {
@@ -309,6 +327,22 @@ dd small {
 .mosquito-panel.very-high {
   border-color: #e8b08a;
   background: #fff0e6;
+}
+
+.rain-panel.rain-none {
+  border-color: #c8d8df;
+  background: #f4f9fb;
+}
+
+.rain-panel.rain-drizzle,
+.rain-panel.rain-light {
+  border-color: #b7d2e2;
+  background: #eef7fc;
+}
+
+.rain-panel.rain-heavy {
+  border-color: #8fb5cf;
+  background: #e4f1f8;
 }
 
 .uv-scale {

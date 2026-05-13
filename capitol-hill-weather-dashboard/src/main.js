@@ -62,6 +62,7 @@ function renderError(error) {
 function renderDashboard(forecast) {
   const current = forecast.current.classification;
   const hours = forecast.hours.filter((hour) => hour.time.getHours() <= 21);
+  const rain = summarizeRain(hours);
   const windows = pickBestWindows(hours.map((hour) => ({ ...hour.classification, time: hour.time })));
   const updated = new Intl.DateTimeFormat("en-US", {
     hour: "numeric",
@@ -97,6 +98,7 @@ function renderDashboard(forecast) {
         ${metric("Wind", `${current.windMph} mph`)}
         ${metric("UV", `<span>${current.uv.value}</span><small>${current.uv.level}</small>`)}
         ${metric("Mosquito Index", `<span>${current.mosquito.value}/10</span><small>${current.mosquito.level}</small>`)}
+        ${metric("Rain", `<span>${rain.summary}</span><small>${rain.metricDetail}</small>`)}
       </dl>
     </section>
 
@@ -128,6 +130,7 @@ function renderDashboard(forecast) {
         </p>
         ${renderUvPanel(current.uv)}
         ${renderMosquitoPanel(current.mosquito)}
+        ${renderRainPanel(rain)}
       </article>
     </section>
 
@@ -158,6 +161,80 @@ function renderDashboard(forecast) {
 
 function metric(label, value) {
   return `<div><dt>${label}</dt><dd>${value}</dd></div>`;
+}
+
+function summarizeRain(hours) {
+  const rainyHours = hours.filter((hour) => hour.classification.precipitation >= 0.01);
+  const nowHour = hours[0]?.time;
+
+  if (!rainyHours.length) {
+    return {
+      summary: "None",
+      metricDetail: "through evening",
+      level: "None",
+      className: "rain-none",
+      headline: "No rain expected through evening.",
+      detail: "No measurable hourly rain is forecast in the current window."
+    };
+  }
+
+  const peak = rainyHours.reduce((max, hour) =>
+    hour.classification.precipitation > max.classification.precipitation ? hour : max
+  );
+  const first = rainyHours[0];
+  const last = rainyHours[rainyHours.length - 1];
+  const nextDry = hours.find((hour) => hour.time > last.time && hour.classification.precipitation < 0.01);
+  const start = formatHour(first.time);
+  const peakTime = formatHour(peak.time);
+  const end = nextDry ? formatHour(nextDry.time) : `after ${formatHour(addHour(last.time))}`;
+  const trend = getRainTrend(rainyHours);
+  const trendDetail = getRainTrendDetail(rainyHours, peakTime);
+  const level = describeRainIntensity(peak.classification.precipitation);
+  const isCurrent = nowHour && first.time.getTime() === nowHour.getTime();
+
+  return {
+    summary: isCurrent ? `${level.label} now` : `${level.label} at ${start}`,
+    metricDetail: `${trendDetail}; ends ${end}`,
+    level: level.label,
+    className: level.className,
+    headline: isCurrent
+      ? `${level.label} rain now.`
+      : `${level.label} rain expected ${start === peakTime ? `at ${start}` : `from ${start}`}.`,
+    detail: `Rain ${trendDetail}; expected to end ${end}. Peak rate ${formatRainAmount(peak.classification.precipitation)}/hr.`
+  };
+}
+
+function describeRainIntensity(amount) {
+  if (amount >= 0.2) return { label: "Heavy", className: "rain-heavy" };
+  if (amount >= 0.05) return { label: "Light", className: "rain-light" };
+  return { label: "Drizzle", className: "rain-drizzle" };
+}
+
+function getRainTrend(rainyHours) {
+  if (rainyHours.length < 2) return "brief";
+
+  const first = rainyHours[0].classification.precipitation;
+  const last = rainyHours[rainyHours.length - 1].classification.precipitation;
+  const peak = Math.max(...rainyHours.map((hour) => hour.classification.precipitation));
+
+  if (last >= first + 0.03) return "gets heavier";
+  if (first >= last + 0.03) return "gets lighter";
+  if (peak >= first + 0.03 && peak >= last + 0.03) return "peaks mid-window";
+  return "stays fairly steady";
+}
+
+function getRainTrendDetail(rainyHours, peakTime) {
+  const trend = getRainTrend(rainyHours);
+
+  if (trend === "gets heavier") return `heavier by ${peakTime}`;
+  if (trend === "gets lighter") return `lighter by ${peakTime}`;
+  if (trend === "peaks mid-window") return `peaks ${peakTime}`;
+  return trend;
+}
+
+function formatRainAmount(amount) {
+  if (amount < 0.01) return "0 in";
+  return `${amount.toFixed(2)} in`;
 }
 
 function renderUvPanel(uv) {
@@ -205,6 +282,16 @@ function renderMosquitoPanel(mosquito) {
   `;
 }
 
+function renderRainPanel(rain) {
+  return `
+    <div class="index-panel rain-panel ${rain.className}" aria-label="Rain detail">
+      <p class="eyebrow">Rain</p>
+      <strong>${escapeHtml(rain.headline)}</strong>
+      <p class="index-detail">${escapeHtml(rain.detail)}</p>
+    </div>
+  `;
+}
+
 function renderWindows(windows) {
   if (!windows.length) {
     return `<p class="empty-state">No green windows left today. If you need to go out, use the hourly caution bands and keep it short.</p>`;
@@ -234,6 +321,7 @@ function renderHour(hour) {
       <strong>${classification.shortLabel}</strong>
       <span>${classification.feelsLike}°F</span>
       <small>UV ${classification.uv.value} · Mosq ${classification.mosquito.value}</small>
+      ${classification.precipitation >= 0.01 ? `<small>Rain ${formatRainAmount(classification.precipitation)}</small>` : ""}
     </div>
   `;
 }
