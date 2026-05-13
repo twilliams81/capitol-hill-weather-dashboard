@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { calculateHeatIndex, calculateWindChill, classifyWeather } from "../src/weatherRules.js";
+import {
+  calculateHeatIndex,
+  calculateMosquitoIndex,
+  calculateWindChill,
+  classifyWeather,
+  describeUvIndex
+} from "../src/weatherRules.js";
 
 test("31F wind chill is red", () => {
   const result = classifyWeather({
@@ -86,4 +92,38 @@ test("82F with high humidity producing 90F heat index is yellow", () => {
 
 test("wind chill formula is not applied above 50F", () => {
   assert.equal(calculateWindChill(55, 15), 55);
+});
+
+test("UV index is grouped into clear risk bands", () => {
+  assert.equal(describeUvIndex(2).level, "Low");
+  assert.equal(describeUvIndex(5).level, "Moderate");
+  assert.equal(describeUvIndex(7).level, "High");
+  assert.equal(describeUvIndex(9).level, "Very high");
+  assert.equal(describeUvIndex(11).level, "Extreme");
+});
+
+test("mosquito index rises with warm humid calm evening weather", () => {
+  const result = calculateMosquitoIndex({
+    time: new Date("2026-07-01T19:00:00-04:00"),
+    temperature: 78,
+    humidity: 76,
+    windSpeed: 2,
+    precipitation: 0.06
+  });
+
+  assert.equal(result.value, 10);
+  assert.equal(result.level, "Very high");
+});
+
+test("mosquito index stays low in dry windy weather", () => {
+  const result = calculateMosquitoIndex({
+    time: new Date("2026-05-01T14:00:00-04:00"),
+    temperature: 72,
+    humidity: 34,
+    windSpeed: 14,
+    precipitation: 0
+  });
+
+  assert.equal(result.value, 2);
+  assert.equal(result.level, "Low");
 });

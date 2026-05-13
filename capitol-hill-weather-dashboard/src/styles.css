@@ -170,9 +170,10 @@ h2 {
 
 .metrics {
   display: grid;
-  grid-template-columns: repeat(2, minmax(86px, 1fr));
+  grid-template-columns: repeat(2, minmax(88px, 1fr));
   gap: 10px;
   margin: 0;
+  max-width: 340px;
 }
 
 .metrics div {
@@ -191,8 +192,20 @@ dt {
 
 dd {
   margin: 4px 0 0;
-  font-size: 1.35rem;
+  font-size: 1.2rem;
   font-weight: 850;
+}
+
+dd span,
+dd small {
+  display: block;
+}
+
+dd small {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
 }
 
 .content-grid {
@@ -247,13 +260,115 @@ dd {
   margin-top: 14px;
 }
 
+.uv-panel,
+.index-panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  margin-top: 16px;
+  padding: 12px;
+}
+
+.uv-header,
+.index-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.uv-header strong,
+.index-header strong {
+  display: block;
+  font-size: 1.25rem;
+}
+
+.uv-header span,
+.index-header span,
+.index-detail {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.index-detail {
+  margin-top: 10px;
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.mosquito-panel.low {
+  border-color: #bfdcc8;
+  background: #f3faf5;
+}
+
+.mosquito-panel.moderate {
+  border-color: #e4cf83;
+  background: #fff9e3;
+}
+
+.mosquito-panel.high,
+.mosquito-panel.very-high {
+  border-color: #e8b08a;
+  background: #fff0e6;
+}
+
+.uv-scale {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.uv-scale span {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.uv-scale i {
+  display: block;
+  height: 8px;
+  margin-bottom: 5px;
+  border-radius: 999px;
+  background: #ccd4cc;
+}
+
+.uv-scale span:nth-child(1) i {
+  background: #5da271;
+}
+
+.uv-scale span:nth-child(2) i {
+  background: #d8b331;
+}
+
+.uv-scale span:nth-child(3) i {
+  background: #d9812b;
+}
+
+.uv-scale span:nth-child(4) i {
+  background: #c95050;
+}
+
+.uv-scale span:nth-child(5) i {
+  background: #8f5aa6;
+}
+
+.uv-scale span.active {
+  color: var(--ink);
+}
+
+.uv-scale span.active i {
+  box-shadow: 0 0 0 3px rgba(32, 33, 36, 0.14);
+}
+
 .timeline-panel {
   margin-top: 16px;
 }
 
 .timeline {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(74px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(86px, 1fr));
   gap: 8px;
   margin-top: 16px;
 }
@@ -267,7 +382,8 @@ dd {
 
 .hour-card time,
 .hour-card strong,
-.hour-card span {
+.hour-card span,
+.hour-card small {
   display: block;
 }
 
@@ -279,6 +395,13 @@ dd {
 
 .hour-card strong {
   margin: 10px 0 6px;
+}
+
+.hour-card small {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
 }
 
 .hour-card.green {

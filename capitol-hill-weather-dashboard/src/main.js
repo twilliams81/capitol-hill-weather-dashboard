@@ -95,6 +95,8 @@ function renderDashboard(forecast) {
         ${metric("Feels", `${current.feelsLike}°F`)}
         ${metric("Humidity", `${current.humidity}%`)}
         ${metric("Wind", `${current.windMph} mph`)}
+        ${metric("UV", `<span>${current.uv.value}</span><small>${current.uv.level}</small>`)}
+        ${metric("Mosquito Index", `<span>${current.mosquito.value}/10</span><small>${current.mosquito.level}</small>`)}
       </dl>
     </section>
 
@@ -124,6 +126,8 @@ function renderDashboard(forecast) {
           ${current.feelsLikeMethod === "heat index" ? "Humidity is included in the heat index." : ""}
           ${current.feelsLikeMethod === "wind chill" ? "Wind is included in the wind chill." : ""}
         </p>
+        ${renderUvPanel(current.uv)}
+        ${renderMosquitoPanel(current.mosquito)}
       </article>
     </section>
 
@@ -156,6 +160,51 @@ function metric(label, value) {
   return `<div><dt>${label}</dt><dd>${value}</dd></div>`;
 }
 
+function renderUvPanel(uv) {
+  const levels = ["Low", "Moderate", "High", "Very high", "Extreme"];
+
+  return `
+    <div class="uv-panel ${uv.className}" aria-label="UV index detail">
+      <div class="uv-header">
+        <div>
+          <p class="eyebrow">UV index</p>
+          <strong>${uv.value} · ${uv.level}</strong>
+        </div>
+        <span>${uv.guidance}</span>
+      </div>
+      <div class="uv-scale" aria-hidden="true">
+        ${levels
+          .map(
+            (level) => `
+              <span class="${level === uv.level ? "active" : ""}">
+                <i></i>
+                ${level}
+              </span>
+            `
+          )
+          .join("")}
+      </div>
+    </div>
+  `;
+}
+
+function renderMosquitoPanel(mosquito) {
+  const reasons = mosquito.reasons.slice(0, 4).join(", ");
+
+  return `
+    <div class="index-panel mosquito-panel ${mosquito.className}" aria-label="Mosquito Index detail">
+      <div class="index-header">
+        <div>
+          <p class="eyebrow">Mosquito Index</p>
+          <strong>${mosquito.value}/10 · ${mosquito.level}</strong>
+        </div>
+        <span>${mosquito.guidance}</span>
+      </div>
+      <p class="index-detail">Estimated from weather: ${escapeHtml(reasons)}.</p>
+    </div>
+  `;
+}
+
 function renderWindows(windows) {
   if (!windows.length) {
     return `<p class="empty-state">No green windows left today. If you need to go out, use the hourly caution bands and keep it short.</p>`;
@@ -184,6 +233,7 @@ function renderHour(hour) {
       <time>${formatHour(hour.time)}</time>
       <strong>${classification.shortLabel}</strong>
       <span>${classification.feelsLike}°F</span>
+      <small>UV ${classification.uv.value} · Mosq ${classification.mosquito.value}</small>
     </div>
   `;
 }
