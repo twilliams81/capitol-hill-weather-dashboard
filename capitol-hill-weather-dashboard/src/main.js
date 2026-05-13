@@ -63,6 +63,7 @@ function renderDashboard(forecast) {
   const current = forecast.current.classification;
   const hours = forecast.hours.filter((hour) => hour.time.getHours() <= 21);
   const rain = summarizeRain(hours);
+  const clothing = getClothingGuidance(current, rain);
   const windows = pickBestWindows(hours.map((hour) => ({ ...hour.classification, time: hour.time })));
   const updated = new Intl.DateTimeFormat("en-US", {
     hour: "numeric",
@@ -99,6 +100,7 @@ function renderDashboard(forecast) {
         ${metric("UV", `<span>${current.uv.value}</span><small>${current.uv.level}</small>`)}
         ${metric("Mosquito Index", `<span>${current.mosquito.value}/10</span><small>${current.mosquito.level}</small>`)}
         ${metric("Rain", `<span>${rain.summary}</span><small>${rain.metricDetail}</small>`)}
+        ${metric("Clothing", `<span>${clothing.summary}</span><small>${clothing.metricDetail}</small>`)}
       </dl>
     </section>
 
@@ -131,6 +133,7 @@ function renderDashboard(forecast) {
         ${renderUvPanel(current.uv)}
         ${renderMosquitoPanel(current.mosquito)}
         ${renderRainPanel(rain)}
+        ${renderClothingPanel(clothing)}
       </article>
     </section>
 
@@ -237,6 +240,83 @@ function formatRainAmount(amount) {
   return `${amount.toFixed(2)} in`;
 }
 
+function getClothingGuidance(current, rain) {
+  const feels = current.feelsLike;
+  const items = [];
+  let summary = "Light layer";
+  let metricDetail = "comfortable";
+  let className = "mild";
+  let headline = "Light layer should be enough.";
+
+  if (feels < 32) {
+    summary = "Bundle up";
+    metricDetail = "indoor best";
+    className = "cold";
+    headline = "Indoor activity is the safer default.";
+    items.push("Warm base layer, insulating layer, hat, mittens, socks, and windproof outer layer.");
+  } else if (feels < 40) {
+    summary = "Warm layers";
+    metricDetail = "hat + mittens";
+    className = "cold";
+    headline = "Use warm, removable layers.";
+    items.push("Warm base layer, coat or bunting, hat, mittens, warm socks, and a wind-blocking outer layer.");
+  } else if (feels < 55) {
+    summary = "Coat layer";
+    metricDetail = "cover hands";
+    className = "cool";
+    headline = "Use a coat or fleece layer.";
+    items.push("Long sleeves, pants, socks, and a coat or fleece; add a hat if it feels windy.");
+  } else if (feels < 70) {
+    summary = "Light layer";
+    metricDetail = "bring backup";
+    className = "mild";
+    headline = "Use a light removable layer.";
+    items.push("Long sleeves or a light jacket over comfortable clothes; bring a backup layer.");
+  } else if (feels < 85) {
+    summary = "Light clothes";
+    metricDetail = "shade + hat";
+    className = "warm";
+    headline = "Use light, breathable clothing.";
+    items.push("Lightweight, breathable clothes; use shade and a brimmed hat when the sun is strong.");
+  } else if (feels <= 95) {
+    summary = "Keep cool";
+    metricDetail = "loose + light";
+    className = "hot";
+    headline = "Dress for heat and keep the outing short.";
+    items.push("Loose, lightweight, light-colored clothing; avoid extra blankets and direct sun.");
+  } else {
+    summary = "Stay cool";
+    metricDetail = "indoor best";
+    className = "hot";
+    headline = "Indoor activity is the safer default in this heat.";
+    items.push("If travel is necessary, use loose, lightweight, light-colored clothing and shade.");
+  }
+
+  if (current.uv.value >= 6) {
+    items.push("For high UV, use shade plus a brimmed hat and lightweight skin-covering clothing.");
+  }
+
+  if (current.windMph >= 12 && feels < 65) {
+    items.push("Wind is noticeable, so favor an outer layer that blocks wind.");
+  }
+
+  if (rain.className !== "rain-none") {
+    items.push(`Pack a rain cover or waterproof layer if out near the rain window (${rain.summary}).`);
+  }
+
+  if (current.mosquito.value >= 3) {
+    items.push("Long sleeves and pants can also reduce mosquito bites in sheltered areas.");
+  }
+
+  return {
+    summary,
+    metricDetail,
+    className,
+    headline,
+    items
+  };
+}
+
 function renderUvPanel(uv) {
   const levels = ["Low", "Moderate", "High", "Very high", "Extreme"];
 
@@ -288,6 +368,18 @@ function renderRainPanel(rain) {
       <p class="eyebrow">Rain</p>
       <strong>${escapeHtml(rain.headline)}</strong>
       <p class="index-detail">${escapeHtml(rain.detail)}</p>
+    </div>
+  `;
+}
+
+function renderClothingPanel(clothing) {
+  return `
+    <div class="index-panel clothing-panel ${clothing.className}" aria-label="Clothing guidance">
+      <p class="eyebrow">Clothing</p>
+      <strong>${escapeHtml(clothing.headline)}</strong>
+      <ul class="compact-list">
+        ${clothing.items.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
+      </ul>
     </div>
   `;
 }
